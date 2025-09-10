@@ -1,3 +1,7 @@
 /build
 /.vscode
+<<<<<<< HEAD
 /.devcontainer
+=======
+/.devcontainer
+>>>>>>> df0ac7f98f70fa839eb758d9191ca6a2fcc6d52d
