@@ -1,0 +1,25 @@
+menu "XemuBox Configuration"
+
+    config XEMUBOX_DEVICE_NAME
+        string "Bluetooth device name"
+        default "XemuBox Gamepad"
+        help
+            BLE advertising device name for the HID Gamepad.
+
+    config XEMUBOX_USB_5V_EN_GPIO
+        int "GPIO controlling 5V for USB host (-1 to disable)"
+        range -1 48
+        default -1
+        help
+            If your ESP32-S3 board exposes a GPIO to enable 5V VBUS for host mode,
+            put its number here. Leave -1 to disable in software.
+
+    config XEMUBOX_BATT_ADC_CH
+        int "ADC channel for battery sense (-1 to disable)"
+        range -1 9
+        default -1
+        help
+            Configure the ADC channel that measures LiPo battery voltage via a divider.
+            Leave -1 if not wired yet.
+
+endmenu
