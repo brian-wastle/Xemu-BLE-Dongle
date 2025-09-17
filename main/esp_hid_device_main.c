@@ -21,21 +21,31 @@ static const char *TAG = "XEMUBOX";
 
 void app_main(void)
 {
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    // NVS partition
+    esp_err_t part = nvs_flash_init();
+    if (part == ESP_ERR_NVS_NO_FREE_PAGES || part == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
         ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
+        part = nvs_flash_init();
     }
-    ESP_ERROR_CHECK(ret);
-
+    ESP_ERROR_CHECK(part);
+    esp_log_level_set("XEMUBOX", ESP_LOG_WARN);
+    esp_log_level_set("USB_GIP", ESP_LOG_WARN);
+    esp_log_level_set("INPUT_MAP", ESP_LOG_WARN);
+    esp_log_level_set("HID_GAMEPAD", ESP_LOG_WARN);
+    esp_log_level_set("ESP_HID_GAP", ESP_LOG_WARN);
     ESP_LOGI(TAG, "Initializing HID GAP");
     ESP_ERROR_CHECK(esp_hid_gap_init(HID_DEV_MODE));
 
-    // Advertise as a generic HID device with our gamepad name (configurable)
-    ESP_ERROR_CHECK(esp_hid_ble_gap_adv_init(ESP_HID_APPEARANCE_GENERIC, CONFIG_XEMUBOX_DEVICE_NAME));
+// Advertise as an HID Gamepad
+#ifdef XEMUBOX_ADV_NAME_STR
+    ESP_ERROR_CHECK(esp_hid_ble_gap_adv_init(ESP_HID_APPEARANCE_GAMEPAD, XEMUBOX_ADV_NAME_STR));
+#else
+    ESP_ERROR_CHECK(esp_hid_ble_gap_adv_init(ESP_HID_APPEARANCE_GAMEPAD, CONFIG_XEMUBOX_DEVICE_NAME));
+#endif
 
+// Bluedroid BLE status
 #if CONFIG_BT_BLE_ENABLED && !CONFIG_BT_NIMBLE_ENABLED
-    // Only needed for Bluedroid BLE
     ESP_ERROR_CHECK(esp_ble_gatts_register_callback(esp_hidd_gatts_event_handler));
 #endif
 
@@ -47,5 +57,5 @@ void app_main(void)
     usb_gip_host_init();
     input_mapper_init();
 
-    ESP_LOGI(TAG, "Startup complete; waiting for BLE connections and USB input");
+    ESP_LOGI(TAG, "Startup complete");
 }

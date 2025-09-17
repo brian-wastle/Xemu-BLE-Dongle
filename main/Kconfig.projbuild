@@ -14,6 +14,13 @@ menu "XemuBox Configuration"
             If your ESP32-S3 board exposes a GPIO to enable 5V VBUS for host mode,
             put its number here. Leave -1 to disable in software.
 
+    config XEMUBOX_USB_5V_EN_ACTIVE_HIGH
+        bool "5V enable pin is active-high"
+        default y
+        help
+            Set this if the 5V enable pin turns the boost on when driven high.
+            Clear it if the pin is active-low.
+
     config XEMUBOX_BATT_ADC_CH
         int "ADC channel for battery sense (-1 to disable)"
         range -1 9
@@ -22,4 +29,132 @@ menu "XemuBox Configuration"
             Configure the ADC channel that measures LiPo battery voltage via a divider.
             Leave -1 if not wired yet.
 
+    config XEMUBOX_VBUS_SENSE_GPIO
+        int "GPIO to sense USB-DEV VBUS (5V present) (-1 to disable)"
+        range -1 48
+        default -1
+        help
+            If your ESP32-S3-USB-OTG board exposes a VBUS detect signal from the
+            USB-DEV Type-C connector, set the GPIO here (active-high by default).
+
+    config XEMUBOX_BATT_MV_MIN_START_USB_HOST
+        int "Min battery mV to enable 5V boost for USB host"
+        range 3000 4300
+        default 3400
+        help
+            Below this threshold, the app will avoid enabling the boost converter
+            for the USB host VBUS to protect the battery.
+
+    config XEMUBOX_BATT_MV_CUTOFF
+        int "Battery cutoff mV (disable boost)"
+        range 2900 4200
+        default 3200
+        help
+            If measured battery voltage falls below this, the boost will be
+            disabled until the battery is charged.
+
+    config XEMUBOX_ENABLE_USB_HOST
+        bool "Enable USB Host (enumeration + input capture)"
+        default y
+        help
+            Enables the ESP-IDF USB Host library and starts a background task to
+            enumerate attached devices. When a controller is connected, its descriptors
+            are logged (VID/PID and interface class/subclass/protocol). Input capture
+            for HID or Xbox GIP will be implemented on top of this.
+
+    config XEMUBOX_USB_SEL_GPIO
+        int "GPIO for USB data switch (USB_SEL)"
+        range -1 48
+        default 18
+        help
+            ESP32-S3-USB-OTG uses USB_SEL (GPIO18 by default) to switch the
+            SoC D+/D- lines to either the USB_HOST (Type-A female) connector or
+            the USB_DEV (Type-A male) connector. Set -1 to skip control in SW.
+
+    config XEMUBOX_USB_SEL_HOST_LEVEL_HIGH
+        bool "USB_SEL level for HOST is HIGH"
+        default y
+        help
+            If enabled, the app will drive USB_SEL high to route D+/D- to the
+            HOST connector before installing the USB Host stack. Disable if your
+            board revision uses LOW for HOST selection.
+
+    # ESP32-S3-USB-OTG Board Pins
+
+    config XEMUBOX_LIMIT_EN_GPIO
+        int "GPIO17 LIMIT_EN (enable host current limiter)"
+        range -1 48
+        default 17
+        help
+            Drives the current limiting IC that supplies 5V to the USB_HOST
+            Type-A connector. High level enables VBUS to the port.
+
+    config XEMUBOX_BOOST_EN_GPIO
+        int "GPIO13 BOOST_EN (enable 5V boost from battery)"
+        range -1 48
+        default 13
+        help
+            High level enables the on-board boost converter that generates 5V
+            from the Li-ion battery, powering the USB_HOST port when DEV VBUS
+            is not present.
+
+    config XEMUBOX_DEV_VBUS_EN_GPIO
+        int "GPIO12 DEV_VBUS_EN (enable DEV VBUS output)"
+        range -1 48
+        default -1
+        help
+            Only needed if you want to source 5V out of the USB_DEV port in a
+            special configuration. Leave -1 for normal use.
+
+    config XEMUBOX_OVER_CURRENT_GPIO
+        int "GPIO21 OVER_CURRENT (input)"
+        range -1 48
+        default 21
+        help
+            Reads the over-current status from the host current limiting IC.
+            High level means over current; firmware will disable LIMIT_EN.
+
+    config XEMUBOX_OC_ACTIVE_HIGH
+        bool "OVER_CURRENT is active-high"
+        default y
+        help
+            Set if the over-current signal is high when tripped. Clear if your
+            board revision uses active-low OC.
+
+    config XEMUBOX_IGNORE_OVER_CURRENT
+        bool "Ignore over-current on DEV power (bring-up)"
+        default n
+        help
+            When enabled, over-current is ignored only while external 5V
+            (USB-DEV VBUS) is detected. OC protection remains active when
+            running on battery/boost. Use this during power-path bring-up to
+            avoid false trips on inrush; disable once verified.
+
+    config XEMUBOX_HOST_VOL_ADC_CH
+        int "ADC1 channel for HOST/DEV 5V sense (HOST_VOL)"
+        range -1 9
+        default 0
+        help
+            ADC1 channel connected to USB supply monitor (GPIO1->ADC1_CH0).
+            Used to detect if external 5V is present.
+
+    config XEMUBOX_BATT_VOL_ADC_CH
+        int "ADC1 channel for battery voltage (BAT_VOL)"
+        range -1 9
+        default 1
+        help
+            ADC1 channel connected to battery divider (GPIO2->ADC1_CH1).
 endmenu
+    config XEMUBOX_GIP_ENABLE_HANDSHAKE
+        bool "Enable basic GIP handshake (experimental)"
+        default y
+        help
+            Attempts to wake the controller's GIP input stream by sending a
+            small vendor-specific packet on the interrupt OUT endpoint if present.
+            This is experimental and may need adjustment per device.
+
+    config XEMUBOX_GIP_VERBOSE_LOG
+        bool "Verbose log of GIP IN frames"
+        default y
+        help
+            Log the first bytes of each GIP IN frame for debugging.

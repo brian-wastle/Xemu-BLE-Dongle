@@ -1,33 +1,45 @@
-# XemuBox BT Dongle (v0.0.1)
+# XemuBox BT Dongle
 
-This project is based on Espressif’s HID device example (IDF v5.5.1). It targets an ESP32‑S3 USB‑OTG dev board acting as a Bluetooth HID Gamepad while reading inputs from a Hyperkin DuchesS controller over USB host (converts Xbox's GIP → HID mapping). This is designed to pair with my XemuBox emulator machine.
+This project was borne from the necessity that the XemuBox emulation miniPc build have a wireless controller solution that closely mimics the original hardware. The Hyperkin DuchesS is an officially licensed remake of the original Xbox's S Controller which uses a USB-C interface. This is ESP32‑S3 firmware that hosts a USB controller (MS-GIPUSB) and exposes a Bluetooth LE HID Gamepad to the host. Out-of-box, it's already tuned for use with Steam, with mappings for sticks, triggers, D‑pad hat, face/shoulder/menu buttons, and Guide menu button.
+
+You will need to acquire up a hardware ID for your device, which is comprised of a Vendor ID (VID) and a Product ID (PID). These are typically licensed by the USB consortium. These can be very expensive. More details on configuration follow.
+
+In order for this device to be advertised over BLE so that Xemu will map it correctly, your PC will need to recognize the device over Bluetooth as a Microsoft Xbox controller. This could, theoretically, only be accomplished by spoofing an official Microsoft device, so solutions for Xemu auto mapping are in the works. 
+
+**Targets**
+
+- Hyperkin DuchesS
+- ESP‑IDF 5.5.x, Espressif ESP32‑S3-USB‑OTG dev board.
+- Windows 11 and Linux Debian/Ubuntu
+- 3.7V 1000mAh LiPo Battery
+
+**Directory Layout**
+- `main/esp_hid_device_main.c` — App bootstrap (NVS, GAP, BLE HID initialization)
+- `main/hid_gamepad.{c,h}` — BLE HID device and report map
+- `main/usb_gip_host.{c,h}` — USB host setup, IN/OUT transfers, GIP frame queue
+- `main/input_mapper.{c,h}` — GIP > `gamepad_state_t` > BLE HID report
+- `main/esp_hid_gap.{c,h}` — GAP helper (advertising, security callbacks)
+- `main/power_manager.{c,h}` — Placeholders for power/battery control
+
+### Set-up/Identity Control
+
+You must set the HID identity for the device to be recognized. It can either be hardcoded in `hid_gamepad.c` or via environment variables at build time in CMakeLists.txt:
+
+- Neutral defaults
+  - Advertised name: `CONFIG_XEMUBOX_DEVICE_NAME` (default “XemuPad”)
+  - VID/PID: 0xFFFF/0x0000 (unset)
 
 
-## Layout
+## Pairing with Debian/Ubuntu (bluetoothctl)
 
-- `main/esp_hid_device_main.c`: minimal app bootstrapping (NVS, GAP, BLE HID init, start tasks)
-- `main/hid_gamepad.{c,h}`: BLE HID device with a simple Gamepad report (16 buttons + 2 sticks)
-- `main/usb_gip_host.{c,h}`: USB host stub to read DuchesS frames (to be implemented)
-- `main/input_mapper.{c,h}`: stub mapper from GIP frames → `gamepad_state_t` → HID report
-- `main/power_manager.{c,h}`: stub for battery monitoring and 5V host power control
-- `main/esp_hid_gap.{c,h}`: GAP helper from upstream example (kept for BLE advertising/init)
+- Pair:
+  - `bluetoothctl` > `power on` > `agent on` > `default-agent` > `scan on`
+  - Wait for device to appear
+  - `pair <MAC>` > `trust <MAC>` > `connect <MAC>` > `scan off`
+- Verify input mapping:
+  - `jstest /dev/input/js0`
 
-## Build & Flash
+## Acknowledgements
 
-1) Select target (ESP32‑S3 recommended):
-   `idf.py set-target esp32s3`
-2) Build/flash/monitor:
-   `idf.py -p PORT flash monitor`
-
-After boot, the device advertises as `XemuPad` (BLE HID). No inputs are sent yet; USB host and mapping are placeholders.
-
-## Next Steps
-
-- USB Host: implement TinyUSB/USB Host class init and device enumeration for DuchesS.
-- GIP Parser: parse incoming endpoints into a normalized controller state.
-- Mapping: translate parsed GIP to `gamepad_state_t` and call `hid_gamepad_send_state`.
-- Power: wire battery ADC and USB 5V enable GPIO; manage wall/battery routing for host mode.
-
-Notes
-- HID descriptor can be extended later (triggers, D‑pad/Hat, vendor usage).
-- If using Bluedroid instead of NimBLE, the project still compiles; current focus is BLE HID.
+- Built on Espressif ESP‑IDF bluetooth template example and GAP helpers.
+- Thanks to the SDL community for the GameController mapping model.

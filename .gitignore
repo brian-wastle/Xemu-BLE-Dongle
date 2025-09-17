@@ -1,3 +1,15 @@
 /build
 /.vscode
 /.devcontainer
+READMEnew.md
+sdkconfig.old
+/managed_components/
+/cmake-build-*/
+/.idea/
+/.ccls-cache/
+/.cache/
+/.venv/
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini
