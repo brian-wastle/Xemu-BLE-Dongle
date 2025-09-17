@@ -21,6 +21,17 @@ In order for this device to be advertised over BLE so that Xemu will map it corr
 - `main/esp_hid_gap.{c,h}` — GAP helper (advertising, security callbacks)
 - `main/power_manager.{c,h}` — Placeholders for power/battery control
 
+## Installation
+
+- Recommended prereqs: Install ESP-IDF extension in VS Code.
+- Minimum prereqs: Install ESP-IDF 5.5.x and set up the environment so `idf.py` is on your PATH.
+- Select target and optional config:
+  - `idf.py set-target esp32s3`
+  - Optional: `idf.py menuconfig` → “XemuBox Configuration” to set device name, USB pins, ADC channels, etc.
+- Build, flash, and monitor (replace `<PORT>` as needed on Windows):
+  - `idf.py -p <PORT> build flash monitor`
+- If the advertised identity is changed later, remove any old Bluetooth pairing on the host and pair again.
+
 ### Set-up/Identity Control
 
 You must set the HID identity for the device to be recognized. It can either be hardcoded in `hid_gamepad.c` or via environment variables at build time in CMakeLists.txt:
