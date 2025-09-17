@@ -4,14 +4,14 @@ This project was born from the necessity that the XemuBox emulation miniPc build
 
 You will need to acquire up a hardware ID for your device, which is comprised of a Vendor ID (VID) and a Product ID (PID). These are typically licensed by the USB consortium. These can be very expensive. More details on configuration follow.
 
-In order for this device to be advertised over BLE so that Xemu will map it correctly, your PC will need to recognize the device over Bluetooth as a Microsoft Xbox controller. This could, theoretically, only be accomplished by spoofing an official Microsoft device, so solutions for Xemu auto mapping are in the works. 
+In order for this device to be advertised over BLE so that Xemu will map it correctly, your PC will need to recognize the device over Bluetooth as a Microsoft Xbox controller. This could only be accomplished by spoofing an official Microsoft device, so solutions for Xemu auto mapping are in the works. 
 
 **Targets**
 
 - Hyperkin DuchesS
 - ESP‑IDF 5.5.x, Espressif ESP32‑S3-USB‑OTG dev board.
-- Windows 11 and Linux Debian/Ubuntu
 - 3.7V 1000mAh LiPo Battery
+- Windows 11 and Linux Debian/Ubuntu
 
 **Directory Layout**
 - `main/esp_hid_device_main.c` — App bootstrap (NVS, GAP, BLE HID initialization)
@@ -29,6 +29,7 @@ You must set the HID identity for the device to be recognized. It can either be 
   - Advertised name: `CONFIG_XEMUBOX_DEVICE_NAME` (default “XemuPad”)
   - VID/PID: 0xFFFF/0x0000 (unset)
 
+There are VIDs/PIDs available for development, testing and non-commerical use. Resources are available online.
 
 ## Pairing with Debian/Ubuntu (bluetoothctl)
 
