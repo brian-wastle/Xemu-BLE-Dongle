@@ -1,4 +1,4 @@
-# XemuBox BT Dongle
+# XemuBox BLE Dongle
 
 This project was born from the necessity that the XemuBox emulation miniPc build have a wireless controller solution that closely mimics the original hardware. The Hyperkin DuchesS is an officially licensed remake of the original Xbox's S Controller which uses a USB-C interface. This is ESP32‑S3 firmware that hosts a USB controller (MS-GIPUSB) and exposes a Bluetooth LE HID Gamepad to the host. Out-of-box, it's already tuned for use with Steam, with mappings for sticks, triggers, D‑pad hat, face/shoulder/menu buttons, and Guide menu button.
 
