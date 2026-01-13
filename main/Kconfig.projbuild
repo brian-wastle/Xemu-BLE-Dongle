@@ -58,9 +58,8 @@ menu "XemuBox Configuration"
         default y
         help
             Enables the ESP-IDF USB Host library and starts a background task to
-            enumerate attached devices. When a controller is connected, its descriptors
-            are logged (VID/PID and interface class/subclass/protocol). Input capture
-            for HID or Xbox GIP will be implemented on top of this.
+            enumerate attached devices. When a compatible HID controller is connected,
+            its descriptors are logged and interrupt IN data is forwarded to the input mapper.
 
     config XEMUBOX_USB_SEL_GPIO
         int "GPIO for USB data switch (USB_SEL)"
@@ -145,16 +144,3 @@ menu "XemuBox Configuration"
         help
             ADC1 channel connected to battery divider (GPIO2->ADC1_CH1).
 endmenu
-    config XEMUBOX_GIP_ENABLE_HANDSHAKE
-        bool "Enable basic GIP handshake (experimental)"
-        default y
-        help
-            Attempts to wake the controller's GIP input stream by sending a
-            small vendor-specific packet on the interrupt OUT endpoint if present.
-            This is experimental and may need adjustment per device.
-
-    config XEMUBOX_GIP_VERBOSE_LOG
-        bool "Verbose log of GIP IN frames"
-        default y
-        help
-            Log the first bytes of each GIP IN frame for debugging.

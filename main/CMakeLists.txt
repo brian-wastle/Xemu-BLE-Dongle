@@ -2,7 +2,7 @@ set(srcs
     esp_hid_device_main.c
     esp_hid_gap.c
     hid_gamepad.c
-    usb_gip_host.c
+    usb_input_host.c
     input_mapper.c
     power_manager.c
     ble_hid_task_startup_stub.c

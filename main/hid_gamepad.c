@@ -18,8 +18,8 @@ static const char *TAG_HID_GP = "HID_GAMEPAD";
 #ifdef XEMUBOX_IDENTITY_PRIV
 #define HID_VID 'VID'
 #define HID_PID 'PID'
-#define HID_DEV_NAME "i.e. Xemupad Wireless Controller"
-#define HID_MFG_NAME "i.e. Giantsoft"
+#define HID_DEV_NAME "Demo Wireless Controller"
+#define HID_MFG_NAME "Demo Manufacturer"
 #else
 #define HID_VID XEMUBOX_VENDOR_ID
 #define HID_PID XEMUBOX_PRODUCT_ID

@@ -13,7 +13,7 @@
 #include "esp_hid_gap.h"
 
 #include "hid_gamepad.h"
-#include "usb_gip_host.h"
+#include "usb_input_host.h"
 #include "input_mapper.h"
 #include "power_manager.h"
 
@@ -30,7 +30,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(part);
     esp_log_level_set("XEMUBOX", ESP_LOG_WARN);
-    esp_log_level_set("USB_GIP", ESP_LOG_WARN);
+    esp_log_level_set("USB_INPUT", ESP_LOG_WARN);
     esp_log_level_set("INPUT_MAP", ESP_LOG_WARN);
     esp_log_level_set("HID_GAMEPAD", ESP_LOG_WARN);
     esp_log_level_set("ESP_HID_GAP", ESP_LOG_WARN);
@@ -54,7 +54,7 @@ void app_main(void)
 
     // Start app subsystems (stubs for now)
     power_manager_init();
-    usb_gip_host_init();
+    usb_input_host_init();
     input_mapper_init();
 
     ESP_LOGI(TAG, "Startup complete");
